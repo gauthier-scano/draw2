@@ -3,12 +3,12 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "draw"
+name = "draw2-WSServer"
 version = "0.1.0"
 authors = [
-  { name="HichTala", email="hich.tala.phd@gmail.com" },
+  { name="Gauthier SCANO", email="gauthier.scano@thecardsadventure.fr" },
 ]
-description = "Detecting and Recognizing A Wide range of cards"
+description = "WebSocket Server to interface the DRAW2 AI"
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
@@ -27,5 +27,5 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/HichTala/draw2"
-Issues = "https://github.com/HichTala/draw2/issues"
+Homepage = "https://github.com/gauthier-scano/draw2"
+Issues = "https://github.com/gauthier-scano/draw2/issues"

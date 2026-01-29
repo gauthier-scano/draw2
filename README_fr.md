@@ -1,158 +1,93 @@
 <div align="center">
-    <p>
-        <img src="figures/banner-draw.png">
-    </p>
-
-
-<div>
-
-[![Licence](https://img.shields.io/pypi/l/ultralytics)](LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/HichTala/draw2?logoColor=%23181717)](https://github.com/HichTala/draw2)
-[![Twitter](https://img.shields.io/badge/-twitter-000?logo=x&labelColor=555)](https://twitter.com/hichtala)
-[![HuggingFace Downloads](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fhuggingface.co%2Fapi%2Fmodels%2FHichTala%2Fdraw2&query=%24.downloads&logo=huggingface&label=downloads&color=%23FFD21E)](https://huggingface.co/HichTala/draw2)
-[![Plugin](https://img.shields.io/badge/-plugin_pour_OBS-302E31?logo=obsstudio&labelColor=555&color=%23302E31)](https://github.com/HichTala/draw2-plugin)
-[![WandB](https://img.shields.io/badge/visualize_in-W%26B-yellow?logo=weightsandbiases&color=%23FFBE00)](https://wandb.ai/hich_/draw)
-[![Medium](https://img.shields.io/badge/-Medium-12100E?style=flat&logo=medium&labelColor=555)](https://medium.com/@hich.tala.phd/how-i-trained-again-my-model-to-detect-and-recognise-a-wide-range-of-yu-gi-oh-cards-5c567a320b0a)
-
-
-[🇬🇧 English](README.md)
-
+    <a href="https://github.com/gauthier-scano/draw2/blob/main/README_fr.md">[🇫🇷 Français](README_fr.md)</a>
 </div>
 
-</div>
+<br>
 
-DRAW est le tout premier détecteur d'objets entraîné à détecter les cartes Yu-Gi-Oh! dans tous types d'images, 
-et en particulier dans les images de duels.
+Ce fork est une refonte du code Python utilisé pour s'interfacer avec l'IA de DRAW2.
 
-Avec cette nouvelle version, **DRAW 2** va au-delà de son prédécesseur. Il est plus précis, plus robuste 
-et beaucoup plus simple à utiliser.
-Il comprend désormais un [plugin pour OBS](https://github.com/HichTala/draw2-plugin) qui permet aux utilisateurs 
-d'intégrer de manière transparente le détecteur directement dans leurs streams ou leurs vidéos ;
-et ceux **sans avoir de compétences techniques particulières**.
-Le plugin peut afficher les cartes détectées en temps réel pour une expérience visuelle améliorée pour les spectateurs.
-(Il s'agit d'un plugin tiers pour OBS Studio. Il n'est ni affilié ni approuvé par le projet OBS.)
+**Ce projet se veut le plus compact et concis possible**. Son objectif : exposer, via un unique fichier, un serveur WebSocket auquel il est possible de se connecter pour envoyer des images en base64 à traiter pour la détection.
 
-D'autres travaux existent (voir [Projets connexes](#div-aligncenterprojets-connexesdiv)) mais aucun n'est capable de reconnaître des cartes pendant un duel.
+Il intègre également le nécessaire pour télécharger toutes les dépendances en local dans le cas où vous utilisez un serveur ou une application coupé d'internet.
 
-Ce projet est sous licence [GNU Affero General Public License v3.0](LICENCE) ; toutes les contributions sont les bienvenues.
+Ce code est utilisé pour réaliser des détections de cartes sur le site du Remote Duel Arena, qui permet à n'importe quels joueurs dans le monde de faire des duels directement dans leur navigateur : <a href="https://remoteduelarena.fr">https://remoteduelarena.fr</a>.
+
+Projet sous licence [GNU Affero General Public License v3.0](LICENCE); toutes les contributions sont les bienvenues.
+
+Merci à HichTala pour ce merveilleux travail ! Créons des choses incroyables avec !
+
+TODO: rendre plus friendly le soft : paramètres en entrée, vérification de l'image (taille, corruption, gestion des erreurs) pour exposition ouverte sur le monde.
 
 ---
-## <div align="center">📄Documentation</div>
 
-Si vous souhaitez simplement utiliser le plugin, veuillez vous référer à la [page du plugin](https://github.com/HichTala/draw2-plugin).
-Dans ce cas, aucune installation n’est nécessaire à partir de ce repo.
-La documentation ci-dessous s'adresse aux personnes qui souhaitent utiliser le détecteur en dehors d'OBS, ce qui nécessite certaines compétences techniques.
+## 🛠️ Installation
 
-### 🛠️ Installation
+Pour installer ce fork, suivez les mêmes étapes d'installation que décrites dans le répertoire de DRAW2 :
 
-Vous avez besoin d'installer Python. L'installation de Python ne sera pas détaillée ici, vous pouvez vous référer à la [documentation](https://www.python.org/).
+```
+git clone https://github.com/HichTala/draw2
+cd draw2
+python -m pip install .
+```
 
-Nous devons d'abord installer pytorch. Il est recommandé d'utiliser un gestionnaire de paquets tel que [miniconda](https://docs.conda.io/projects/miniconda/en/latest/). 
-Veuillez vous référer à la [documentation](https://docs.conda.io/projects/miniconda/en/latest/).
+## 🚀 Usage
 
-Lorsque tout est prêt, vous pouvez lancer la commande suivante pour installer pytorch :
+Une fois l'installation terminée, lancez simplement le serveur via la commande ci-dessous :
+
 ```shell
-python -m pip install torch torchvision
-```
-Si vous voulez utiliser votre gpus pour faire tourner le tout plus rapidement, veuillez vous référer à la [documentation](https://pytorch.org/get-started/locally/).
-
-Ensuite, il vous suffit de cloner le repo et d'installer les `requirements`:
-```Shell
-git clone https://github.com/HichTala/draw
-cd draw
-python -m pip install -r requirements.txt
+python app.py
 ```
 
-Cloner le repo n'est pas obligatoire si vous avez déjà tous les requirements installés, vous pouvez simplement exécuter :
-```Shell
-python -m pip install git+https://github.com/HichTala/draw2.git
+**Aucune option n'est supportée**. Par défaut, le serveur WebSocket est démarré sur localhost:8765.
+Vous pouvez modifier ce comportement simplement en modifiant les arguments passés à la classe App lors de son instanciation (arguments 2 and 3).
+
+Une fois connecté au serveur WebSocket, tous les échanges sont faits en JSON.
+La taille maximale autorisée d'un message WebSocket est configurée sur 10Mo.
+Vous pouvez envoyer des messages de 2 types :
+
+### 1) Traitement d'une image en base64 :
+
+```
+{
+    "type": "analyze",
+    "transactionId": string|integer, identifiant unique de la transaction. Tout étant traité en asynchrone, cet identifiant sera spécifié dans la réponse renvoyée par le serveur
+    "data": string, image en base64, avec ou sans le mimeType (data:[...],)
+}
 ```
 
-Votre installation est maintenant terminée.
+La réponse sera sous la forme :
 
-### 🚀 Utilisation
-
-Une fois l'installation terminée, vous pouvez utiliser le détecteur en exécutant la commande suivante :
-
-```Shell
-python -m draw
+```
+{
+    "status": "success",
+    "transactionId": string|integer, identifiant unique de la transaction
+    "result": [{
+        "box": array, tableau de coordonnées délimitant le forme détectée sous la forme [x1, y1, x2, y2...],
+        "result": [{
+            "label": string, nom de la carte détectée sous la forme [NOM]-[ID CARTE],
+            "score": number, taux de fiabilité de la reconnaissance entre 0 et 1, 1 étant le meilleur possible
+        }, ...]
+    }, ...]
+}
 ```
 
-Vous pour ajouter le flag `--help` pour afficher toutes les options disponibles. :
-```Shell
-python -m draw --help
+### 2) Fermeture propre de la connexion :
+
+```
+{
+    "type": "close"
+}
 ```
 
-Les options les plus importantes sont les suivantes :
-- `--source`: Chemin vers l'image, la vidéo ou l'indice de la webcam (par default, `0` pour la webcam).
-- `--save`: Chemin où sauvegarder la vidéo.
-- `--save-images`: Pour sauvegarder les images et les photos des cartes détectées.
-- `--show`: Pour afficher la vidéo en temps réel.
-- `--display-card`: Pour afficher l'image de la carte détectée.
-- `--deck-list`: Chemin vers un fichier ydk contenant la deck lists (permet d'améliorer la précision).
-- `--fps`: FPS de la vidéo à sauvegarder (par default, 60).
+Aucune réponse n'est retournée.
 
----
-## <div align="center">💡Inspiration</div>
+### Gestion des erreurs :
 
-Ce projet a été inspiré par un projet du créateur [SuperZouloux](https://www.youtube.com/watch?v=64-LfbggqKI) 
-donnant vie aux cartes _Yu-Gi-Oh!_ à l'aide d'un hologramme. Son projet utilise des puces insérées sous les protections
-de chaque carte, qui sont lues par le tapis de jeu, ce qui permet de reconnaître les cartes.
+En cas d'erreur, un objet est retourné. 3 erreurs possibles : le format JSON est incorrect, l'id de la transaction est manquant, une propriété est manquante dans l'objet `data`. **Toutes les autres erreurs doivent être traitées au niveau applicatif supérieur (image corrompue ou trop grosses typiquement).**
 
-L'insertion des puces dans les protections est non seulement laborieuse, mais pose également un autre problème : 
-les cartes face cachée sont lues de la même manière que les cartes face visible. 
-Un détecteur automatique est donc une solution tout à fait adaptée.
-
-Bien que ce projet ait été découragé par _KONAMI_ <sup>®</sup>, l'éditeur du jeu (ce qui est tout à fait compréhensible),
-on peut néanmoins imaginer un tel système pour afficher les cartes jouées lors d'un duel retransmit en direct, 
-pour permettre aux spectateurs de lire les cartes.
-
----
-## <div align="center">🔗Projets connexes</div>
-
-Bien qu'à ma connaissance `draw` soit le premier détecteur capable de localiser et de détecter des cartes _Yu-Gi-Oh!_ dans un environnement de duel, 
-d'autres travaux existent et ont été une source d'inspiration pour ce projet. Il convient donc de les mentionner proprement.
-
-[Yu-Gi-Oh ! NEURON](https://www.konami.com/games/eu/fr/products/yugioh_neuron/) est une application officielle développée par _KONAMI_ <sup>®</sup>. Elle est dotée de nombreuses fonctionnalités, dont la reconnaissance des cartes. L'application est capable de reconnaître un total de 20 cartes à la fois, ce qui reste très honorable. L'inconvénient est que les cartes doivent être de bonne qualité pour être reconnues, ce qui n'est pas forcément le cas dans un contexte de duel. De plus, elle n'est pas intégrable, la seule et unique façon de l'utiliser est donc d'utiliser l'application.
-
-[yugioh one shot learning](https://github.com/vanstorm9/yugioh-one-shot-learning) fait par `vanstorm9` est un programme de classification des cartes Yu-Gi-Oh!. Il utilise un réseau de neurones siamois pour entraîner son modèle. Il donne des résultats très impressionnants sur des images de bonne qualité, mais pas très bons sur des images de moins bonne qualité,
-et il ne peut pas localiser les cartes.
-
-[Yolov11](https://github.com/ultralytics/ultralytics) est la dernière version de la très célèbre famille `yolo` de modèles de détection d'objets qui permet d'utiliser des boxes orientées. Est-il vraiment nécessaire de le présenter aujourd'hui ? Il représente l'état de l'art en matière de modèle de détection d'objets en temps réel.
-
-[ViT](https://arxiv.org/pdf/2010.11929.pdf) est un modèle pré-entraîné pour la classification d'images basé sur l'architecture Vision Transformer. 
-Il s'appuie entièrement sur des mécanismes d'attention pour traiter les fragments d'images au lieu d'utiliser des couches convolutives. 
-Il convient bien à notre tâche, car des versions pré-entraînées sur des ensembles de données à grande échelle tels que ImageNet-21K sont disponibles. 
-Cela est particulièrement pertinent pour notre cas d'utilisation, car il permet de traiter un grand nombre de catégories visuelles similaires aux plus de 13 000 cartes uniques présentes dans _Yu-Gi-Oh!_.
-
-
-[SpellTable](https://spelltable.wizards.com/) est une application gratuite conçue et réalisée par `Jonathan Rowny` et son équipe pour jouer à _Magic : The Gathering_ à distance. 
-Elle permet au joueur de cliquer sur une carte sur le flux de n'importe quel joueur pour l'identifier rapidement. 
-Il a quelques similitudes avec `draw` puisqu'il rend possible la localisaton et la reconnaissance de n'importe quelle carte à partir d'une base de données de 17 000 cartes.
-L'idée est proche de ce projet, mais elle n'en est pas à l'origine.
-
----
-## <div align="center">🔍Aperçu de la méthode</div>
-
-Un blog medium expliquant le processus principal, de la collecte des données à la prédiction finale a été publié.
-Vous pouvez le retrouver [ici](https://medium.com/@hich.tala.phd/how-i-trained-again-my-model-to-detect-and-recognise-a-wide-range-of-yu-gi-oh-cards-5c567a320b0a). Si vous avez des questions, n'hésitez pas à ouvrir une issue.
-
-[![Medium](https://img.shields.io/badge/-Medium-12100E?style=flat&logo=medium&labelColor=555)](https://medium.com/@hich.tala.phd/how-i-trained-again-my-model-to-detect-and-recognise-a-wide-range-of-yu-gi-oh-cards-5c567a320b0a)
-
----
-## <div align="center">💬Contact</div>
-
-Vous pouvez me joindre sur Twitter [@hichtala](https://twitter.com/hichtala) ou par mail [hich.tala.phd@gmail.com](mailto:hich.tala.phd@gmail.com).
-
----
-## <div align="center">⭐Historique des Stars</div>
-
-<div align="center">
-<a href="https://www.star-history.com/#hichtala/draw2&type=date&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=hichtala/draw2&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=hichtala/draw2&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=hichtala/draw2&type=date&legend=top-left" />
- </picture>
-</a>
-</div>
+```
+{
+    "status": "error",
+    "message": string, raison de l'erreur
+}
+```
