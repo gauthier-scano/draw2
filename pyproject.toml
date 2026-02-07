@@ -27,7 +27,7 @@ dependencies = [
 ]
 
 [tool.hatch.build.targets.wheel]
-include = ["draw2_wsserver.py"]
+include = ["app.py"]
 
 [project.urls]
 Homepage = "https://github.com/gauthier-scano/draw2"
