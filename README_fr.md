@@ -25,7 +25,7 @@ TODO: rendre plus friendly le soft : paramètres en entrée, vérification de l'
 Pour installer ce fork, suivez les mêmes étapes d'installation que décrites dans le répertoire de DRAW2 :
 
 ```
-git clone https://github.com/HichTala/draw2
+git clone https://github.com/gauthier-scano/draw2
 cd draw2
 python -m pip install .
 ```

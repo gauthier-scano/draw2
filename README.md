@@ -27,7 +27,7 @@ TODO: making the software more user-friendly: input parameters, image verificati
 To install this fork, simply follow the same steps described in the DRAW2 Repository :
 
 ```
-git clone https://github.com/HichTala/draw2
+git clone https://github.com/gauthier-scano/draw2
 cd draw2
 python -m pip install .
 ```

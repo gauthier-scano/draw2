@@ -26,6 +26,9 @@ dependencies = [
     "ultralytics>=8.3.245",
 ]
 
+[tool.hatch.build.targets.wheel]
+include = ["draw2_wsserver.py"]
+
 [project.urls]
 Homepage = "https://github.com/gauthier-scano/draw2"
 Issues = "https://github.com/gauthier-scano/draw2/issues"
